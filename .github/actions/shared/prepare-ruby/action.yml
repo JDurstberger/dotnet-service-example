@@ -1,0 +1,18 @@
+name: 'Prepare .NET'
+description: 'Prepare .NET'
+
+runs:
+  using: "composite"
+  steps:
+    - name: set ruby version
+      shell: bash
+      run: |
+        echo "RUBY_VERSION=$(./ci-scripts/tool-version.sh ruby)" >> "$GITHUB_ENV"
+    - name: print ruby version
+      shell: bash
+      run: |
+        echo "found ruby version: $RUBY_VERSION"
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ env.RUBY_VERSION }}
+        bundler-cache: true

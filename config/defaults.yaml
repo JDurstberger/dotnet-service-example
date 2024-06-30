@@ -1,0 +1,17 @@
+region: "eu-central-1"
+
+component: "dotnet-service-example"
+component_name: "DotnetServiceExample"
+
+app_project_dir: "%{hiera('component_name')}/src/%{hiera('component_name')}"
+
+storage_bucket_name: "%{hiera('component')}-%{deployment_identifier}"
+
+service_lambda_function_name: "%{hiera('component')}"
+service_lambda_handler: "%{hiera('component_name')}"
+service_lambda_filename: "%{cwd}/%{hiera('component_name')}.zip"
+
+service_state_bucket_name: "%{hiera('storage_bucket_name')}"
+service_state_key: "service/deployment-state/default.tfstate"
+service_state_bucket_region: "%{hiera('region')}"
+service_state_bucket_is_encrypted: "true"

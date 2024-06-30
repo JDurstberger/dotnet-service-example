@@ -1,0 +1,16 @@
+---
+vars:
+  region: "%{hiera('region')}"
+
+  component: "%{hiera('component')}"
+  deployment_identifier: "%{deployment_identifier}"
+
+  service_lambda_function_name: "%{hiera('service_lambda_function_name')}"
+  service_lambda_handler: "%{hiera('service_lambda_handler')}"
+  service_lambda_filename: "%{hiera('service_lambda_filename')}"
+  
+backend_config:
+  bucket: "%{hiera('service_state_bucket_name')}"
+  key: "%{hiera('service_state_key')}"
+  region: "%{hiera('service_state_bucket_region')}"
+  encrypt: "%{hiera('service_state_bucket_is_encrypted')}"

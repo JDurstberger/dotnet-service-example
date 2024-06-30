@@ -1,0 +1,21 @@
+name: 'Prepare Ruby'
+description: 'Prepare ruby'
+
+runs:
+  using: "composite"
+  steps:
+    - name: set .NET version
+      shell: bash
+      run: |
+        echo "DOTNET_VERSION=$(./ci-scripts/tool-version.sh dotnet)" >> "$GITHUB_ENV"
+    - name: print .NET version
+      shell: bash
+      run: |
+        echo "found version: $DOTNET_VERSION"
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: install lambda tools
+      shell: bash
+      run: |
+        dotnet tool install -g Amazon.Lambda.Tools --version 5.10.5
