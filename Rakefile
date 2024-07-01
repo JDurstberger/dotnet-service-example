@@ -16,6 +16,15 @@ namespace :app do
     Command.run("dotnet build")
   end
 
+  task :run, [:deployment_identifier] do |_, args|
+    puts "Running..."
+    args.with_defaults(deployment_identifier: 'local')
+
+    Dir.chdir(app_project_dir) do
+      Command.run("dotnet run")
+    end
+  end
+
   task :package do
     puts "Packaging..."
     Dir.chdir(app_project_dir) do
