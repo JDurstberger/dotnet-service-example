@@ -16,6 +16,7 @@
         <!-- TrimMode partial will only trim assemblies marked as trimmable. To reduce package size make all assemblies trimmable and set TrimMode to full.
         If there are trim warnings during build, you can hit errors at runtime.-->
         <TrimMode>partial</TrimMode>
+        <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.10.0"/>
