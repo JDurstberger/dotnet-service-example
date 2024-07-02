@@ -1,82 +1,44 @@
-using System.Net;
 using System.Text.Json.Serialization;
-
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using Shared.Service;
+using Endpoint = Shared.Service.Endpoint;
 
-namespace DotnetServiceExample; 
+namespace DotnetServiceExample;
 
 public class App
 {
-  private readonly WebApplication _app;
+    private static readonly IEnumerable<Endpoint> Endpoints = Echo.Endpoints.All;
 
-  public App()
-  {
-    var builder = WebApplication.CreateSlimBuilder();
-    ConfigureHosting(builder);
-    ConfigureLogger(builder);
+    private readonly WebApplication _app;
 
-    _app = builder.Build();
-    AttachRoutes(_app);
-  }
-
-  private static void ConfigureHosting(WebApplicationBuilder builder)
-  {
-    builder.Services.AddAWSLambdaHosting(
-      LambdaEventSource.RestApi,
-      new SourceGeneratorLambdaJsonSerializer<LambdaFunctionJsonSerializerContext>()
-    );
-    builder.Services.ConfigureHttpJsonOptions(options =>
-      options.SerializerOptions.TypeInfoResolver = LambdaFunctionJsonSerializerContext.Default);
-
-    builder.WebHost.UseUrls($"http://localhost:9999");
-  }
-
-  private static void ConfigureLogger(WebApplicationBuilder builder)
-  {
-    builder.Logging.AddJsonConsole(options =>
+    public App()
     {
-      options.UseUtcTimestamp = true;
-      options.TimestampFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
-    });
-  }
+        var builder = WebApplication.CreateSlimBuilder();
+        ConfigureHosting(builder);
+        BaseApp.ConfigureWebApplication(builder);
 
-  private void AttachRoutes(IEndpointRouteBuilder app)
-  {
-    app.MapGet("/", (Delegate)(async (HttpContext context) => await BaseHandler.Handle(_app, context)));
-    app.MapPost("/", (Delegate)(async (HttpContext context) => await BaseHandler.Handle(_app, context)));
-  }
-
-  public Task Run()
-  {
-    return _app.RunAsync();
-  }
-}
-
-public static class BaseHandler
-{
-  public static async Task<string> Handle(WebApplication app, HttpContext context)
-  {
-    try
-    {
-      var body = await ReadBodyAsString(context);
-      context.Response.ContentType = "application/hal+json";
-      context.Response.StatusCode = (int)HttpStatusCode.OK;
-      return body;
+        _app = builder.Build();
+        BaseApp.SetMiddlewares(_app);
+        BaseApp.AttachRoutes(_app, Endpoints);
     }
-    catch (Exception e)
+
+    private static void ConfigureHosting(WebApplicationBuilder builder)
     {
-      app.Logger.LogError(e, "unexpected exception occured");
-      context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-      return "{}";
+        builder.Services.AddAWSLambdaHosting(
+            LambdaEventSource.RestApi,
+            new SourceGeneratorLambdaJsonSerializer<LambdaFunctionJsonSerializerContext>()
+        );
+        builder.Services.ConfigureHttpJsonOptions(options =>
+            options.SerializerOptions.TypeInfoResolver = LambdaFunctionJsonSerializerContext.Default);
+
+        builder.WebHost.UseUrls($"http://localhost:9999");
     }
-  }
-  
-  private static async Task<string> ReadBodyAsString(HttpContext context)
-  {
-    using var reader = new StreamReader(context.Request.Body);
-    return await reader.ReadToEndAsync();
-  }
+
+    public Task Run()
+    {
+        return _app.RunAsync();
+    }
 }
 
 [JsonSerializable(typeof(APIGatewayProxyRequest))]

@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetServiceExample", "Dot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetServiceExample.Tests", "DotnetServiceExample\test\DotnetServiceExample.Tests\DotnetServiceExample.Tests.csproj", "{B46F568F-ACB0-4851-B4D6-67ABBFE99348}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{4BA5FD30-1F42-4547-B01F-8649B3744685}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{B46F568F-ACB0-4851-B4D6-67ABBFE99348}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B46F568F-ACB0-4851-B4D6-67ABBFE99348}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B46F568F-ACB0-4851-B4D6-67ABBFE99348}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BA5FD30-1F42-4547-B01F-8649B3744685}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BA5FD30-1F42-4547-B01F-8649B3744685}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BA5FD30-1F42-4547-B01F-8649B3744685}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA5FD30-1F42-4547-B01F-8649B3744685}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
