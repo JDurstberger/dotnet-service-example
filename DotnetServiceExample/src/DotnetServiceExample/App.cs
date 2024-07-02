@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Serialization.SystemTextJson;
-using Shared;
 using Shared.Service;
+using SomethingElse;
 using Endpoint = Shared.Service.Endpoint;
 
 namespace DotnetServiceExample;

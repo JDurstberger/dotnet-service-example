@@ -1,7 +1,7 @@
 using Shared.Service;
 using Endpoint = Shared.Service.Endpoint;
 
-namespace DotnetServiceExample;
+namespace SomethingElse;
 
 public static class Attach
 {
