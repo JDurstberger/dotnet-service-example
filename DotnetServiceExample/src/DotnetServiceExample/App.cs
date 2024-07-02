@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using Shared;
 using Shared.Service;
 using Endpoint = Shared.Service.Endpoint;
 
@@ -16,11 +17,11 @@ public class App
     {
         var builder = WebApplication.CreateSlimBuilder();
         ConfigureHosting(builder);
-        BaseApp.ConfigureWebApplication(builder);
+        ConfigureWebApplication(builder);
 
         _app = builder.Build();
-        BaseApp.SetMiddlewares(_app);
-        BaseApp.AttachRoutes(_app, Endpoints);
+        SetMiddlewares(_app);
+        AttachRoutes(_app, Endpoints);
     }
 
     private static void ConfigureHosting(WebApplicationBuilder builder)
@@ -34,6 +35,59 @@ public class App
 
         builder.WebHost.UseUrls($"http://localhost:9999");
     }
+    
+      public static void ConfigureWebApplication(
+        WebApplicationBuilder builder
+      )
+      {
+        ConfigureLogger(builder);
+        BuildDependencies(builder);
+      }
+    
+      private static void ConfigureLogger(WebApplicationBuilder builder)
+      {
+        builder.Logging.AddJsonConsole(options =>
+        {
+          options.UseUtcTimestamp = true;
+          options.TimestampFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
+        });
+      }
+    
+      private static void BuildDependencies(WebApplicationBuilder builder)
+      {
+        builder.Services.AddTransient<ILogger>(s => s.GetRequiredService<ILogger>());
+      }
+    
+      public static void SetMiddlewares(IApplicationBuilder app)
+      {
+        app.UseStatusCodePages(async context =>
+        {
+          context.HttpContext.Response.ContentType = "application/hal+json";
+          var resource = HalResource.Create().ToJson();
+          await context.HttpContext.Response.WriteAsync("{}");
+        });
+      }
+    
+      public static void AttachRoutes(WebApplication app, IEnumerable<Endpoint> endpoints)
+      {
+        foreach (Endpoint endpoint in endpoints)
+        {
+          if (endpoint.Method == HttpMethod.Post)
+          {
+            app.MapPost(
+              endpoint.Route,
+              (Delegate)(async (HttpContext context) => await BaseHandler.Handle(app, endpoint, context))
+            );
+          }
+          else
+          {
+            app.MapGet(
+              endpoint.Route,
+              (Delegate)(async (HttpContext context) => await BaseHandler.Handle(app, endpoint, context))
+            );
+          }
+        }
+      }
 
     public Task Run()
     {
