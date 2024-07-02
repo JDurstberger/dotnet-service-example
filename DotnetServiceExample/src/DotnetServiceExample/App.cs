@@ -17,7 +17,7 @@ public class App
     {
         var builder = WebApplication.CreateSlimBuilder();
         ConfigureHosting(builder);
-        ConfigureWebApplication(builder);
+        BaseApp.ConfigureWebApplication(builder);
 
         _app = builder.Build();
         BaseApp.SetMiddlewares(_app);
