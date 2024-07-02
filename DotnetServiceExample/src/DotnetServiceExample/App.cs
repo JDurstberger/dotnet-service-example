@@ -20,8 +20,8 @@ public class App
         ConfigureWebApplication(builder);
 
         _app = builder.Build();
-        SetMiddlewares(_app);
-        BaseApp.AttachRoutes(_app, Endpoints);
+        BaseApp.SetMiddlewares(_app);
+        AttachRoutes(_app, Endpoints);
     }
 
     private static void ConfigureHosting(WebApplicationBuilder builder)
@@ -66,6 +66,27 @@ public class App
           var resource = HalResource.Create().ToJson();
           await context.HttpContext.Response.WriteAsync("{}");
         });
+      }
+      
+      public static void AttachRoutes(WebApplication app, IEnumerable<Endpoint> endpoints)
+      {
+          foreach (Endpoint endpoint in endpoints)
+          {
+              if (endpoint.Method == HttpMethod.Post)
+              {
+                  app.MapPost(
+                      endpoint.Route,
+                      (Delegate)(async (HttpContext context) => await BaseHandler.Handle(app, endpoint, context))
+                  );
+              }
+              else
+              {
+                  app.MapGet(
+                      endpoint.Route,
+                      (Delegate)(async (HttpContext context) => await BaseHandler.Handle(app, endpoint, context))
+                  );
+              }
+          }
       }
     
     public Task Run()
