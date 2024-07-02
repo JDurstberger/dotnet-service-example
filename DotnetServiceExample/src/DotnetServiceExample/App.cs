@@ -21,7 +21,7 @@ public class App
 
         _app = builder.Build();
         BaseApp.SetMiddlewares(_app);
-        AttachRoutes(_app, Endpoints);
+        Attach.AttachRoutes(_app, Endpoints);
     }
 
     private static void ConfigureHosting(WebApplicationBuilder builder)
@@ -36,38 +36,6 @@ public class App
         builder.WebHost.UseUrls($"http://localhost:9999");
     }
     
-      public static void ConfigureWebApplication(
-        WebApplicationBuilder builder
-      )
-      {
-        ConfigureLogger(builder);
-        BuildDependencies(builder);
-      }
-    
-      private static void ConfigureLogger(WebApplicationBuilder builder)
-      {
-        builder.Logging.AddJsonConsole(options =>
-        {
-          options.UseUtcTimestamp = true;
-          options.TimestampFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
-        });
-      }
-    
-      private static void BuildDependencies(WebApplicationBuilder builder)
-      {
-        builder.Services.AddTransient<ILogger>(s => s.GetRequiredService<ILogger>());
-      }
-    
-      public static void SetMiddlewares(IApplicationBuilder app)
-      {
-        app.UseStatusCodePages(async context =>
-        {
-          context.HttpContext.Response.ContentType = "application/hal+json";
-          var resource = HalResource.Create().ToJson();
-          await context.HttpContext.Response.WriteAsync("{}");
-        });
-      }
-      
       public static void AttachRoutes(WebApplication app, IEnumerable<Endpoint> endpoints)
       {
           foreach (Endpoint endpoint in endpoints)
